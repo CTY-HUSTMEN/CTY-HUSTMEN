@@ -106,6 +106,7 @@ select {
     cursor: pointer;
 }
 
+
 /* Button styling */
 button {
     width: 100%;
@@ -130,17 +131,21 @@ button:hover {
 
 .decor-item {
     position: absolute;
-    pointer-events: none;
-    z-index: 1; /* Below the card */
-    will-change: transform;
-    opacity: 0.8;
-    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.2));
+    z-index: 2; 
+    pointer-events: none; 
 }
 
 .decor-item img {
     width: 100%;
-    border-radius: 20%;
+    border-radius: 24px; 
+    box-shadow: 0 20px 45px rgba(0,0,0,0.25); 
     object-fit: cover;
+    
+    /* CÁC THUỘC TÍNH ÉP TRÌNH DUYỆT DÙNG GPU ĐỂ RENDER MƯỢT MÀ */
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0); 
 }
 
 /* Common float animation */
@@ -195,6 +200,47 @@ button:hover {
     .item-cinnamon { right: 8%; width: 90px; }
 }
 
+/* DARK MODE */
+body.dark-mode {
+    background: linear-gradient(135deg, #5c5656, #5c5858);
+    color: #fff;
+}
+
+body.dark-mode .container {
+    background: #323030;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+body.dark-mode input {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: #fff;
+}
+
+body.dark-mode input::placeholder {
+    color: #aaa;
+}
+
+/* smooth */
+body, .container, input {
+    transition: all 0.3s ease;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f1f1f1;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+
 </style>
 
 </head>
@@ -234,24 +280,52 @@ button:hover {
 </div>
 
 <div class="wrapper">
-    <div class="container" id="mainBox">
-        <img src="logo.png" class="logo" alt="HUST MEN Logo">
+    <div class="container">
+
+        <div class="theme-toggle" onclick="toggleTheme()">🌙</div>
+
+        <img src="logo.png" class="logo">
         <div class="title">HUST MEN</div>
 
-        <p class="instruction">Xin hãy nhập thông tin của bạn</p>
+        <p>Xin hãy nhập thông tin của bạn</p>
 
         <form id="form">
             <input type="text" id="name" placeholder="Họ và tên" required>
             <input type="number" id="age" placeholder="Tuổi" required>
             <input type="number" id="phone" placeholder="SĐT" required>
             <input type="text" id="problem" placeholder="Nghề nghiệp của bạn" required>
-            
+
             <button type="submit">Chuyển sang bước tiếp theo</button>
         </form>
+
     </div>
 </div>
 
 <script>
+// toggle theme
+function toggleTheme() {
+    document.body.classList.toggle("dark-mode");
+
+    const btn = document.querySelector(".theme-toggle");
+
+    if (document.body.classList.contains("dark-mode")) {
+        btn.innerHTML = "☀️";
+        localStorage.setItem("theme", "dark");
+    } else {
+        btn.innerHTML = "🌙";
+        localStorage.setItem("theme", "light");
+    }
+}
+
+// load saved theme
+(function () {
+    const saved = localStorage.getItem("theme");
+
+    if (saved === "dark") {
+        document.body.classList.add("dark-mode");
+        document.querySelector(".theme-toggle").innerHTML = "☀️";
+    }
+})();
 document.getElementById("form").addEventListener("submit", function(e){
     e.preventDefault();
 
